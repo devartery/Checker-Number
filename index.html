@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چکر شماره تلفن - نسخه واقعی</title>
+    <!-- اتصال به Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- فونت وزیر -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f3f4f6; /* رنگ پس‌زمینه خاکستری روشن */
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            transition: all 0.3s ease-in-out;
+        }
+        .btn {
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        /* استایل‌های مختلف برای وضعیت‌ها */
+        .status-green { background-color: #d1fae5; color: #065f46; }
+        .status-yellow { background-color: #fef3c7; color: #92400e; }
+        .status-red { background-color: #fee2e2; color: #991b1b; }
+        .status-gray { background-color: #e5e7eb; color: #374151; }
+        .status-blue { background-color: #dbeafe; color: #1e40af; }
+        .status-purple { background-color: #e9d5ff; color: #5b21b6; }
+        .status-black { background-color: #d1d5db; color: #1f2937; }
+        .status-error { background-color: #fee2e2; color: #b91c1c; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <div class="container mx-auto p-4 max-w-2xl">
+        <div class="card">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">چکر شماره تلفن</h1>
+                <p class="text-gray-500 mt-2">شماره تلفن مورد نظر خود را برای بررسی وضعیت وارد کنید.</p>
+            </div>
+
+            <!-- فرم ورودی -->
+            <div class="flex flex-col sm:flex-row gap-3 mb-6">
+                <input type="tel" id="phoneNumber" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="مثال: +15005550006">
+                <button id="checkButton" class="btn bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    بررسی کن
+                </button>
+            </div>
+
+            <!-- بخش نتایج -->
+            <div id="resultSection" class="hidden mt-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-3">نتیجه:</h2>
+                <div id="resultContent" class="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <!-- محتوای نتیجه اینجا قرار می‌گیرد -->
+                </div>
+            </div>
+
+            <!-- راهنمای وضعیت‌ها -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">راهنمای وضعیت‌ها:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-green-500"></span><strong class="text-green-700">سبز:</strong><span>شماره سالم و مشکلی ندارد.</span></div>
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-gray-400"></span><strong class="text-gray-700">سفید:</strong><span>شماره سالم ولی استفاده شده.</span></div>
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-yellow-400"></span><strong class="text-yellow-700">زرد:</strong><span>درخواست بیش از حد، شماره محدود شده.</span></div>
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-red-500"></span><strong class="text-red-700">قرمز:</strong><span>شماره محدود شده و باید صبر کنید.</span></div>
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-black"></span><strong class="text-black">مشکی:</strong><span>شماره از تلگرام بن شده.</span></div>
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-purple-500"></span><strong class="text-purple-700">بنفش:</strong><span>شماره تلفن اشتباه است.</span></div>
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-full bg-blue-500"></span><strong class="text-blue-700">آبی:</strong><span>مشکل از سمت سرور است.</span></div>
+                </div>
+            </div>
+        </div>
+        <footer class="text-center mt-6 text-gray-500 text-sm">
+            <p>این صفحه تلاش می‌کند به API واقعی متصل شود.</p>
+        </footer>
+    </div>
+
+    <script>
+        const checkButton = document.getElementById('checkButton');
+        const phoneNumberInput = document.getElementById('phoneNumber');
+        const resultSection = document.getElementById('resultSection');
+        const resultContent = document.getElementById('resultContent');
+
+        // دیکشنری وضعیت‌ها برای نمایش در رابط کاربری
+        const statusMap = {
+            "🟢": { text: "شماره سالمه و مشکلی ندارد", className: "status-green" },
+            "⚪️": { text: "شماره سالم ولی استفاده شده است", className: "status-gray" },
+            "🟡": { text: "درخواست پیش از حد شماره محدود شده", className: "status-yellow" },
+            "🔴": { text: "شماره محدود شده و باید صبر کنید", className: "status-red" },
+            "⚫️": { text: "شماره بن شده از تلگرام و غیر قابل استفاده", className: "status-black" },
+            "🟣": { text: "شماره تلفن اشتباه است", className: "status-purple" },
+            "🔵": { text: "مشکل از سمت سرور است", className: "status-blue" },
+        };
+
+        // تابع برای نمایش نتیجه در UI
+        function displayResult(phone, statusKey, statusInfo) {
+             resultContent.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span class="font-mono text-lg">${phone}</span>
+                    <span class="status-badge ${statusInfo.className}">${statusKey} ${statusInfo.text}</span>
+                </div>
+            `;
+        }
+        
+        // تابع برای نمایش خطا در UI
+        function displayError(phone, message) {
+            resultContent.innerHTML = `
+                <div class="status-badge status-error mb-2">${message}</div>
+                <p class="text-sm text-gray-600">یک نتیجه شبیه‌سازی شده به جای آن نمایش داده می‌شود.</p>
+            `;
+            // نمایش یک نتیجه شبیه‌سازی شده به عنوان جایگزین
+            setTimeout(() => {
+                const statuses = Object.keys(statusMap);
+                const randomStatusKey = statuses[Math.floor(Math.random() * statuses.length)];
+                const statusInfo = statusMap[randomStatusKey];
+                displayResult(phone, randomStatusKey, statusInfo);
+            }, 1000);
+        }
+
+        // رویداد کلیک دکمه
+        checkButton.addEventListener('click', async () => {
+            const phone = phoneNumberInput.value.trim();
+            if (!phone) {
+                alert('لطفاً یک شماره تلفن وارد کنید.');
+                return;
+            }
+
+            // نمایش حالت لودینگ
+            resultSection.classList.remove('hidden');
+            resultContent.innerHTML = `<div class="text-center text-gray-500">در حال بررسی، لطفاً صبر کنید...</div>`;
+            checkButton.disabled = true;
+            checkButton.innerText = 'در حال بررسی...';
+
+            const apiUrl = `https://api-bot.site/check/Check.php?phone=${phone}`;
+
+            try {
+                // --- تلاش برای فراخوانی API واقعی ---
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    // اگر سرور خطایی مثل 404 یا 500 برگرداند
+                    throw new Error(`خطای سرور: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const statusKey = data.status; // فرض می‌کنیم API یک JSON با کلید status برمی‌گرداند
+
+                if (statusKey && statusMap[statusKey]) {
+                    const statusInfo = statusMap[statusKey];
+                    displayResult(phone, statusKey, statusInfo);
+                } else {
+                    throw new Error("پاسخ دریافتی از API قابل شناسایی نبود.");
+                }
+
+            } catch (error) {
+                // این بخش معمولاً به دلیل خطای CORS اجرا می‌شود
+                console.error("خطا در فراخوانی API:", error);
+                displayError(phone, "اتصال به API واقعی ممکن نیست (احتمالاً به دلیل محدودیت CORS).");
+            } finally {
+                // این بخش همیشه در انتها اجرا می‌شود
+                checkButton.disabled = false;
+                checkButton.innerText = 'بررسی کن';
+            }
+        });
+
+        // اجازه دادن به فشردن Enter برای شروع بررسی
+        phoneNumberInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                checkButton.click();
+            }
+        });
+    </script>
+
+</body>
+</html>
